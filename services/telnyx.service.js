@@ -1,7 +1,20 @@
+const got = require('got')
+
+const telnyxApiKey = process.env.TELNYX_API_KEY
+
+const telnyxClient = got.extend({
+	prefixUrl: 'https://api.telnyx.com/v2',
+	responseType: 'json',
+	resolveBodyOnly: true,
+	hooks: {
+		beforeRequest: options => {
+			options.headers.Authorization = `Bearer ${telnyxApiKey}`
+		}
+	}
+})
+
 module.exports = {
 	name: 'telnyx',
-	settings: {},
-	dependencies: [],
 	actions: {
 		webhook: {
 			rest: {
@@ -28,11 +41,15 @@ module.exports = {
 		},
 	},
 
-	methods: {},
-
-	created() {},
-
-	async started() {},
-
-	async stopped() {},
+	methods: {
+		async apiRequest({action, id, payload}) {
+			return id
+				? telnyxClient.post(`calls/${id}/${action}`, {
+					json: payload
+				})
+				: telnyxClient.post(`calls/${action}`, {
+					json: payload
+				})
+		}
+	},
 }
