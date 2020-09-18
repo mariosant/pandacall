@@ -7,10 +7,12 @@ const telnyxClient = got.extend({
 	responseType: 'json',
 	resolveBodyOnly: true,
 	hooks: {
-		beforeRequest: options => {
-			options.headers.Authorization = `Bearer ${telnyxApiKey}`
-		}
-	}
+		beforeRequest: [
+			(options) => {
+				options.headers.Authorization = `Bearer ${telnyxApiKey}`
+			},
+		],
+	},
 })
 
 module.exports = {
@@ -42,14 +44,14 @@ module.exports = {
 	},
 
 	methods: {
-		async apiRequest({action, id, payload}) {
+		async apiRequest({ action, id, payload }) {
 			return id
 				? telnyxClient.post(`calls/${id}/${action}`, {
-					json: payload
-				})
+						json: payload,
+				  })
 				: telnyxClient.post(`calls/${action}`, {
-					json: payload
-				})
-		}
+						json: payload,
+				  })
+		},
 	},
 }
