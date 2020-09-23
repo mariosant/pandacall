@@ -2,7 +2,7 @@ const {customAlphabet} = require('nanoid')
 const slugify = require('@sindresorhus/slugify');
 const DbMixin = require('../mixins/db.mixin')
 
-const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 5)
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz', 15)
 
 module.exports = {
 	name: 'accounts',
@@ -13,7 +13,6 @@ module.exports = {
 			_id: 'string|optional',
 			enabled: 'boolean|optional',
 			name: 'string|min:3',
-			slug: 'string|min:5',
 			branches: {
 				$$type: 'array',
 				items: {
@@ -36,6 +35,17 @@ module.exports = {
 		 */
 
 		// --- ADDITIONAL ACTIONS ---
+
+		findById: {
+			params: {
+				id: 'string'
+			},
+			async handler(ctx) {
+				const account = await this.adapter.findById(ctx.params.id)
+
+				return account
+			}
+		},
 
 		canReceiveCalls: {
 			params: {
@@ -60,7 +70,7 @@ module.exports = {
 
 				return doc
 			}
-		},		
+		},
 	},
 
 	methods: {
@@ -73,7 +83,6 @@ module.exports = {
 		before: {
 			create(ctx) {
 				ctx.params.id = nanoid()
-				ctx.params.slug = `${slugify(ctx.params.name)}-${nanoid()}`
 				ctx.params.enabled = ctx.params.enabled || false
 			},
 		},
