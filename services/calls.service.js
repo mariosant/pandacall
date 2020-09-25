@@ -26,6 +26,7 @@ module.exports = {
 		remove: false,
 
 		initiate: {
+			rest: 'POST /',
             params: {
 				accountId: 'string',
 				branch: 'string',
